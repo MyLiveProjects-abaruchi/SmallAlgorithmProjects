@@ -48,48 +48,39 @@ func (hashTable *LinearProbingHashTable) Dump() {
 }
 
 func (hashTable *LinearProbingHashTable) find(name string) (int, int) {
-    if hashTable.numEntries == 0 {
-        return -1, -1
-    }
 
     keyHashIdx := hash(name) % (hashTable.capacity - 1)
-
     currIdx := keyHashIdx
+
     for i := 1; currIdx < hashTable.capacity; i++ {
+        // Employee not found
         if hashTable.data[currIdx] == nil {
-            return -1, 1
+            return currIdx, -1
         }
+        // Employee found
         if hashTable.data[currIdx].Name == name {
             return keyHashIdx, i
         }
-        currIdx += i
+        currIdx = keyHashIdx + i
     }
 
+    // Table is full
     return -1, -1
 }
 
 func (hashTable *LinearProbingHashTable) Set(name string, phone string) {
 
+    newEmployee := employee.NewEmployee(name, phone)
+
     keyIdx, deltaIdx := hashTable.find(name)
-    employeeIdx := keyIdx + deltaIdx
+    newIdx := keyIdx
 
-    if keyIdx >= 0 {
-        hashTable.data[employeeIdx].Name = name
-        hashTable.data[employeeIdx].Phone = phone
-        return
+    if deltaIdx >= 1 {
+        newIdx += deltaIdx
+    } else {
+        hashTable.numEntries += 1
     }
-
-    employeeToAdd := employee.NewEmployee(name, phone)
-
-    currIdx := hash(name) % (hashTable.capacity - 1)
-    for i := 0; i < hashTable.capacity; i++ {
-        if hashTable.data[currIdx] == nil {
-            hashTable.data[currIdx] = employeeToAdd
-            hashTable.numEntries += 1
-            return
-        }
-        currIdx += i
-    }
+    hashTable.data[newIdx] = newEmployee
 }
 
 func (hashTable *LinearProbingHashTable) Get(name string) string {
@@ -115,8 +106,8 @@ func (hashTable *LinearProbingHashTable) Get(name string) string {
 }
 
 func (hashTable *LinearProbingHashTable) Contains(name string) bool {
-    keyIdx, _ := hashTable.find(name)
-    return keyIdx >= 0
+    _, delta := hashTable.find(name)
+    return delta >= 0
 }
 
 func (hashTable *LinearProbingHashTable) Delete(name string) {
