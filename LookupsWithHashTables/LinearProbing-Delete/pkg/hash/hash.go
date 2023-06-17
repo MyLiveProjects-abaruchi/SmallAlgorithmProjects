@@ -61,8 +61,7 @@ func (hashTable *LinearProbingHashTable) find(name string) (int, int) {
 
     deletedIdx := -1
     currIdx := 0
-    for i := 0; currIdx < hashTable.capacity; i++ {
-        currIdx = keyHashIdx + i
+    for i := 1; currIdx < hashTable.capacity; i++ {
         // Found a NIL position (the item isn't in hash table)
         if hashTable.data[currIdx] == nil {
             // Return the deleted item we found (if we found)
@@ -83,6 +82,7 @@ func (hashTable *LinearProbingHashTable) find(name string) (int, int) {
         if hashTable.data[currIdx].Name == name {
             return keyHashIdx, i
         }
+        currIdx = keyHashIdx + i
     }
     // This return indicates the hash is full
     return -1, -1

@@ -55,7 +55,7 @@ func (hashTable *LinearProbingHashTable) find(name string) (int, int) {
     keyHashIdx := hash(name) % (hashTable.capacity - 1)
 
     currIdx := keyHashIdx
-    for i := 0; currIdx < hashTable.capacity; i++ {
+    for i := 1; currIdx < hashTable.capacity; i++ {
         if hashTable.data[currIdx] == nil {
             return -1, 1
         }
