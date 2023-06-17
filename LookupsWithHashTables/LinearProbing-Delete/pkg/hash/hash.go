@@ -52,10 +52,6 @@ func (hashTable *LinearProbingHashTable) Dump() {
 }
 
 func (hashTable *LinearProbingHashTable) find(name string) (int, int) {
-    // The hash table is empty
-    if hashTable.numEntries == 0 {
-        return -1, -1
-    }
 
     keyHashIdx := hash(name) % (hashTable.capacity - 1)
 
@@ -90,25 +86,17 @@ func (hashTable *LinearProbingHashTable) find(name string) (int, int) {
 
 func (hashTable *LinearProbingHashTable) Set(name string, phone string) {
 
-    if hashTable.numEntries == 0 {
-        employeeIdx := hash(name) % hashTable.capacity
-        hashTable.data[employeeIdx] = employee.NewEmployee(name, phone)
-        hashTable.numEntries += 1
-    }
+    newEmployee := employee.NewEmployee(name, phone)
 
     keyIdx, deltaIdx := hashTable.find(name)
+    newIdx := keyIdx
 
-    if hashTableIsFull(keyIdx, deltaIdx) {
-        return
-    }
-
-    newEmployee := employee.NewEmployee(name, phone)
-    hashTable.data[keyIdx] = newEmployee
-
-    if deltaIdx == -1 {
+    if deltaIdx >= 1 {
+        newIdx += deltaIdx
+    } else {
         hashTable.numEntries += 1
     }
-    return
+    hashTable.data[newIdx] = newEmployee
 }
 
 func (hashTable *LinearProbingHashTable) Get(name string) string {
